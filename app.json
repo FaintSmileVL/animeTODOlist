@@ -28,8 +28,7 @@
       "supportsTablet": false
     },
     "android": {
-      "package": "com.antares.todolist2",
-      "googleServicesFile": "./google-services.json"
+      "package": "com.antares.todolist2"
     }
   }
 }
