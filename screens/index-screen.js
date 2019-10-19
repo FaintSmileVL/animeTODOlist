@@ -14,6 +14,7 @@ import {CurrentDateView} from "../components/current-date-view";
 import {OverallOpacity} from "../components/clickable/opacity/overall-opacity";
 import Theme from "../theme";
 import {DeleteOpacity} from "../components/clickable/opacity/delete-opacity";
+import { SwipeListView } from 'react-native-swipe-list-view';
 
 
 export class MainScreen extends AbstractScreen {
@@ -67,18 +68,61 @@ export class MainScreen extends AbstractScreen {
             </View>
         )
     };
-
+    renderFlatList2 = () => {
+         return (
+             <FlatList
+                 data={this.state.TASK_LIST}
+                 renderItem={({item}) => this.renderFlatListItem(item)}
+                 keyExtractor={item => item.date}
+                 scrollEnabled
+                 showsVerticalScrollIndicator={false}
+                 extraData={this.state}
+             />
+         )
+    };
+    /**
+     * Свайп влево - в архив
+     * @returns {*}
+     */
     renderFlatList = () => {
+       return (
+           <SwipeListView
+               useFlatList
+               disableRightSwipe={true}
+               data={this.state.TASK_LIST}
+               renderItem={ ({item}) => this.renderFlatListItem(item)}
+               renderHiddenItem={ ({item}) => this.renderHiddenItem(item)}
+               stopLeftSwipe={75}
+               onSwipeValueChange={this.onSwipeValueChange}
+           />
+       )
+    };
+
+    onSwipeValueChange = (swipeData) => {
+        const { key, value } = swipeData;
+        console.log('swipeData', swipeData);
+        // 375 or however large your screen is (i.e. Dimensions.get('window').width)
+        console.log('key', key);
+        console.log('value', value);
+        /*
+        if (value < -375 && !this.animationIsRunning) {
+            this.animationIsRunning = true;
+            Animated.timing(this.rowTranslateAnimatedValues[key], { toValue: 0, duration: 200 }).start(() => {
+                const newData = [...this.state.TASK_LIST];
+                const prevIndex = this.state.TASK_LIST.findIndex(item => item.key === key);
+                newData.splice(prevIndex, 1);
+                this.setState({TASK_LIST: newData});
+                this.animationIsRunning = false;
+            });
+        }*/
+    };
+
+    renderHiddenItem = (item) => {
         return (
-            <FlatList
-                data={this.state.TASK_LIST}
-                renderItem={({item}) => this.renderFlatListItem(item)}
-                keyExtractor={item => item.date}
-                scrollEnabled
-                showsVerticalScrollIndicator={false}
-                extraData={this.state}
-            />
-        )
+            <View style={styles.rowBack}>
+                {item.isDone ? <Text>Left</Text> : <Text>Right</Text>}
+            </View>
+        );
     };
 
     renderFlatListItem = (task) => {
@@ -89,6 +133,7 @@ export class MainScreen extends AbstractScreen {
                 alignItems: 'flex-start',
                 borderColor: Theme.borderColor,
                 borderBottomWidth: 1,
+                backgroundColor: Theme.backgroundPrimary
             }}>
                 <View>
                     <View style={{paddingLeft: 10, paddingTop: 10, paddingRight: 10}}>
@@ -216,5 +261,21 @@ const styles = StyleSheet.create({
     date: {
         fontSize: 14,
         color: Theme.textLight2
-    }
+    },
+    rowFront: {
+        alignItems: 'center',
+        backgroundColor: '#CCC',
+        borderBottomColor: 'black',
+        borderBottomWidth: 1,
+        justifyContent: 'center',
+        height: 50,
+    },
+    rowBack: {
+        alignItems: 'center',
+        backgroundColor: '#DDD',
+        flex: 1,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        paddingLeft: 15,
+    },
 });

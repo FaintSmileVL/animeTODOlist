@@ -9,6 +9,7 @@ import {
     FontAwesome,
     Ionicons,
 } from '@expo/vector-icons';
+import { Container, Text } from 'native-base';
 
 export default class App extends Component {
     state = {
@@ -38,7 +39,9 @@ export default class App extends Component {
             );
         }
         return (
-            <AppContainer/>
+            <Container>
+                <AppContainer/>
+            </Container>
         );
     }
 
